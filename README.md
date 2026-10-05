@@ -9,12 +9,12 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
 
 ## Integrantes
 
-| Persona | GitHub | Modulo | Rama |
+| Nombre | GitHub | Modulo | Rama |
 |---|---|---|---|
-| Cesar Mejia | [@CaesarG08](https://github.com/CaesarG08) | Carrito y pedidos | `feature/carrito` |
-| Jose Daniel Ramirez | [@carloschavarria80109](https://github.com/carloschavarria80109) | Usuarios y seguridad | `feature/usuarios` |
-| Yukita | [@Gen1818](https://github.com/Gen1818) | Catalogo e inventario | `feature/catalogo` |
-| Cristopher Murillo | [@CristopherMurillo](https://github.com/CristopherMurillo) | Gestion y seguimiento | `feature/gestion` |
+| Cesar Luis Mejia Gonzalez | [@CaesarG08](https://github.com/CaesarG08) | Carrito y pedidos | `feature/carrito` |
+| Carlos Eduardo Chavarria Jimenez | [@carloschavarria80109](https://github.com/carloschavarria80109) | Usuarios y seguridad | `feature/usuarios` |
+| Genesis Dayana Castillo Lara | [@Gen1818](https://github.com/Gen1818) | Catalogo e inventario | `feature/catalogo` |
+| Cristopher Josue Murillo Granados | [@CristopherMurillo](https://github.com/CristopherMurillo) | Gestion y seguimiento | `feature/gestion` |
 
 ---
 
