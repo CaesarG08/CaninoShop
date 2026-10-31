@@ -1,0 +1,23 @@
+<!-- Fragmento #1 que irá en el head de todas las páginas, así se incluye todo lo necesario de configuración-->
+<head th:fragment="head">
+    <title>CaninoShop</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+</head>
+
+<!-- Encabezado y menú -->
+<header th:fragment="header" class="container-fluid p-0">
+
+</header>
+
+
+<!-- Derechos de autor -->
+<footer th:fragment="footer"
+        class="container-fluid text-center py-4 mt-5"
+        style="background-color: #e6eee4; color: #315c43;">
+
+</footer>

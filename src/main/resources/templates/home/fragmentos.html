@@ -1,0 +1,51 @@
+<section th:fragment="home" class="container py-4">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Productos para tu perro</h2>
+        <p class="text-muted">
+            Todo lo que necesita tu mejor amigo en un mismo lugar.
+        </p>
+    </div>
+
+    <!-- Iteración de productos -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4"
+         th:if="${productos != null and !productos.isEmpty()}">
+
+        <div class="col" th:each="p : ${productos}">
+            <article class="card h-100 shadow-sm">
+
+                <!-- Imagen temporal (mientras le agregan rutas de imágenes reales) -->
+                <div class="bg-light text-center py-5 border-bottom">
+                    <i class="fa-solid fa-bone fa-3x text-secondary"></i>
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold" th:text="${p.nombre}">
+                        Nombre del producto
+                    </h5>
+
+                    <p class="card-text small mb-3 flex-grow-1"
+                       th:text="${p.descripcion}">
+                        Descripción breve del producto.
+                    </p>
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                        <span class="text-success fw-bold fs-5">
+                            ₡<span th:text="${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+                        </span>
+                        <a href="#" class="btn btn-sm btn-primary">Ver detalle</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Mensaje cuando la base de datos está vacía -->
+    <div class="text-center py-5"
+         th:if="${productos == null or productos.isEmpty()}">
+        <i class="fa-solid fa-dog fa-3x text-secondary mb-3"></i>
+        <h5>No hay productos disponibles</h5>
+        <p class="text-muted">
+            Pronto agregaremos inventario a la tienda.
+        </p>
+    </div>
+</section>
