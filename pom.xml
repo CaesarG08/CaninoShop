@@ -112,7 +112,14 @@
             <version>3.1.5.RELEASE</version>
         </dependency>
 
-        
+       
+        <!-- Generacion de codigos QR para autenticacion 2FA -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.4</version>
+        </dependency>
+ 
         
         
         

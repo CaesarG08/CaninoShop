@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+<header th:replace="~{general/fragmentos :: header}"></header>
+<main class="container my-5">
+    <div class="row"><div class="col-lg-7 mx-auto"><div class="card">
+        <div class="card-header bg-success text-white"><h4>Guarda tus códigos de recuperación</h4></div>
+        <div class="card-body">
+            <div class="alert alert-warning">Estos códigos se muestran una sola vez. Guárdalos en un lugar seguro, fuera de la aplicación. Cada uno sirve para un único inicio de sesión.</div>
+            <ul class="list-group mb-3">
+                <li th:each="codigo : ${codigos}" class="list-group-item font-monospace" th:text="${codigo}"></li>
+            </ul>
+            <a class="btn btn-success" th:href="@{/}">He guardado mis códigos — entrar a CaninoShop</a>
+        </div>
+    </div></div></div>
+</main>
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body></html>

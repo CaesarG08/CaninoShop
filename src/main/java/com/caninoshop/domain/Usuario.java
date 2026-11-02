@@ -26,6 +26,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "usuario")
 public class Usuario implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -63,6 +64,17 @@ public class Usuario implements Serializable {
 
     @Column(name = "activo", nullable = false)
     private boolean activo;
+    
+    // Doble autenticación (2FA)
+
+    @Column(name = "totp_habilitado", nullable = false)
+    private boolean totpHabilitado = false;
+
+    @Column(name = "totp_secreto", length = 512)
+    private String totpSecreto;
+
+    @Column(name = "totp_ultimo_paso", nullable = false)
+    private long totpUltimoPaso = -1;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "usuario_rol",
