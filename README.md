@@ -23,14 +23,44 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
 - Java 21 + Spring Boot
 - Thymeleaf + Bootstrap 5
 - MySQL / Hibernate JPA
-- Firebase Storage
+- Spring Security con doble autenticacion (2FA)
 - Maven
 
 ---
 
 ## Como ejecutar el proyecto
 
-Instrucciones de instalacion se agregaran en el Avance 2.
+### Requisitos
+
+- JDK 21
+- Maven (o NetBeans con soporte para Spring Boot)
+- MySQL 8
+
+### 1. Crear la base de datos
+
+Ejecutar `src/main/resources/creaTablas.sql` en MySQL Workbench con un usuario administrador. El script crea la base `caninoshop`, el usuario de la aplicacion, todas las tablas y datos de prueba (roles, estados de pedido, categorias y productos). Se puede ejecutar mas de una vez.
+
+### 2. Configurar la clave de la doble autenticacion
+
+La aplicacion no inicia sin la variable de entorno `CANINOSHOP_2FA_KEY`, una clave aleatoria de 32 bytes en Base64.
+
+Para generarla en PowerShell:
+
+```powershell
+$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Fill($b); [Convert]::ToBase64String($b)
+```
+
+En Linux o macOS: `openssl rand -base64 32`.
+
+Se define como variable de entorno del sistema o de la sesion antes de iniciar la aplicacion. Si se cambia la clave, los usuarios que ya activaron el 2FA deben volver a configurarlo.
+
+### 3. Ejecutar
+
+```
+mvn spring-boot:run
+```
+
+La aplicacion queda en http://localhost:82. Los usuarios se crean en `/registro/nuevo`; al iniciar sesion por primera vez se activa el 2FA con una aplicacion como Google Authenticator o Microsoft Authenticator.
 
 ---
 
