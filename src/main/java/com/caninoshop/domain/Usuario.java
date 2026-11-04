@@ -7,15 +7,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,19 +31,17 @@ public class Usuario implements Serializable {
     @Column(name = "id_usuario")
     private Integer idUsuario;
 
-    @NotBlank
-    @Size(max = 75)
-    @Column(name = "username", nullable = false, unique = true, length = 75)
-    private String username;
+    @Size(max = 20)
+    @Column(name = "cedula", unique = true, length = 20)
+    private String cedula;
 
     @NotBlank
     @Size(max = 100)
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @NotBlank
-    @Size(max = 100)
-    @Column(name = "apellidos", nullable = false, length = 100)
+    @Size(max = 150)
+    @Column(name = "apellidos", length = 150)
     private String apellidos;
 
     @NotBlank
@@ -55,30 +50,21 @@ public class Usuario implements Serializable {
     @Column(name = "correo", nullable = false, unique = true, length = 150)
     private String correo;
 
-    @Column(name = "telefono", length = 25)
-    private String telefono;
-
     @NotBlank
-    @Column(name = "password", nullable = false, length = 255)
+    @Column(name = "contrasena", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "activo", nullable = false)
-    private boolean activo;
-    
-    // Doble autenticación (2FA)
+    @Size(max = 20)
+    @Column(name = "telefono", length = 20)
+    private String telefono;
 
-    @Column(name = "totp_habilitado", nullable = false)
-    private boolean totpHabilitado = false;
+    @Column(name = "direccion", columnDefinition = "TEXT")
+    private String direccion;
 
-    @Column(name = "totp_secreto", length = 512)
-    private String totpSecreto;
+    @Column(name = "estado", nullable = false)
+    private boolean activo = true;
 
-    @Column(name = "totp_ultimo_paso", nullable = false)
-    private long totpUltimoPaso = -1;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "usuario_rol",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_rol"))
-    private Set<Rol> roles = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "id_rol", nullable = false)
+    private Rol rol;
 }

@@ -11,8 +11,8 @@
             <div class="alert alert-danger" th:if="${param.error}">[[#{usuario.errorLogin}]]</div>
             <div class="alert alert-info" th:if="${param.logout}">[[#{usuario.sesionCerrada}]]</div>
             <form method="post" th:action="@{/login}">
-                <label for="username" class="form-label">[[#{usuario.username}]]</label>
-                <input id="username" name="username" class="form-control mb-3" required/>
+                <label for="correo" class="form-label">[[#{usuario.correo}]]</label>
+                <input id="correo" name="correo" type="email" maxlength="150" class="form-control mb-3" required/>
                 <label for="password" class="form-label">[[#{usuario.password}]]</label>
                 <input id="password" name="password" type="password" class="form-control mb-3" required/>
                 <button type="submit" class="btn btn-success">[[#{usuario.login}]]</button>
