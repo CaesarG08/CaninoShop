@@ -10,9 +10,66 @@
 </head>
 
 <!-- Encabezado y menú -->
-<header th:fragment="header" class="container-fluid p-0">
+
+
+<header th:fragment="header"
+        class="container-fluid p-0"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+
+            <a class="navbar-brand" th:href="@{/}">
+                CaninoShop
+            </a>
+
+            <div class="d-flex gap-2 align-items-center">
+
+                <a class="btn btn-outline-light btn-sm"
+                   th:href="@{/}">
+                    Inicio
+                </a>
+
+                <!-- Visitantes sin iniciar sesion -->
+                <a sec:authorize="isAnonymous()"
+                   class="btn btn-outline-light btn-sm"
+                   th:href="@{/registro/nuevo}">
+                    Crear cuenta
+                </a>
+
+                <a sec:authorize="isAnonymous()"
+                   class="btn btn-light btn-sm"
+                   th:href="@{/login}">
+                    Iniciar sesión
+                </a>
+
+                <!-- Nombre del usuario autenticado -->
+                <span sec:authorize="isAuthenticated()"
+                      class="text-white me-2">
+                    Usuario:
+                    <strong sec:authentication="name"></strong>
+                </span>
+
+                <!-- Cerrar sesion -->
+                <form sec:authorize="isAuthenticated()"
+                      th:action="@{/logout}"
+                      method="post"
+                      class="d-inline">
+
+                    <button type="submit"
+                            class="btn btn-light btn-sm">
+                        Cerrar sesión
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+    </nav>
 
 </header>
+
+
 
 
 <!-- Derechos de autor -->
