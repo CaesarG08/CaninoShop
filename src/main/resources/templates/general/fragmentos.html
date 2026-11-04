@@ -43,6 +43,22 @@
                     Iniciar sesión
                 </a>
 
+                <!-- Carrito y pedidos del cliente -->
+                <a sec:authorize="isAuthenticated()"
+                   class="btn btn-outline-light btn-sm"
+                   th:href="@{/mispedidos/listado}">
+                    <i class="fa-solid fa-box"></i> [[#{menu.mispedidos}]]
+                </a>
+
+                <a sec:authorize="isAuthenticated()"
+                   class="btn btn-warning btn-sm position-relative"
+                   th:href="@{/carrito/listado}">
+                    <i class="fa-solid fa-cart-shopping"></i> [[#{menu.carrito}]]
+                    <span class="badge text-bg-danger"
+                          th:if="${cantidadCarrito != null and cantidadCarrito > 0}"
+                          th:text="${cantidadCarrito}"></span>
+                </a>
+
                 <!-- Nombre del usuario autenticado -->
                 <span sec:authorize="isAuthenticated()"
                       class="text-white me-2">
