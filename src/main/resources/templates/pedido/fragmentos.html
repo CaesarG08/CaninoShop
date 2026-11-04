@@ -1,0 +1,243 @@
+
+<section xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" th:fragment="listado" class="pb-5">
+    <div class="bg-success text-white py-3 mb-4">
+        <div class="container">
+            <h4 class="m-0 fw-bold" th:text="#{pedido.titulo.listado}"></h4>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Muestra el resultado de la última actualización del pedido. -->
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="status" th:if="${todoOk != null}">
+            <i class="fas fa-circle-check me-2"></i>
+            <span th:text="${todoOk}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" th:aria-label="#{accion.cerrar}"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" th:if="${error != null}">
+            <i class="fas fa-circle-exclamation me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" th:aria-label="#{accion.cerrar}"></button>
+        </div>
+
+        <!-- Formulario para filtrar los pedidos por fecha y estado. -->
+        <div class="card border-0 shadow-sm mb-4 bg-light">
+            <div class="card-body">
+                <form th:action="@{/pedido/listado}" method="GET" class="row g-3 align-items-center">
+                    <div class="col-md-auto">
+                        <label class="fw-bold small text-muted" th:text="#{pedido.filtros}"></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control form-control-sm" name="fechaInicio" th:value="${fechaInicio}" th:aria-label="#{pedido.fecha.inicio}"/>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control form-control-sm" name="fechaFin" th:value="${fechaFin}" th:aria-label="#{pedido.fecha.fin}"/>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" name="idEstado">
+                            <option value="" th:text="#{pedido.estado.todos}"></option>
+                            <option th:each="e : ${estados}" 
+                                    th:value="${e.idEstadoPedido}" 
+                                    th:text="${e.nombre}"
+                                    th:selected="${e.idEstadoPedido == idEstadoSeleccionado}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-auto">
+                        <button type="submit" class="btn btn-primary btn-sm px-3">
+                            <i class="fas fa-search"></i> <span th:text="#{accion.consultar}"></span>
+                        </button>
+                        <a th:href="@{/pedido/listado}" class="btn btn-secondary btn-sm px-2" th:text="#{accion.limpiar}"></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla con los datos principales y las acciones disponibles. -->
+        <div class="card border shadow-sm">
+            <div class="card-body p-4">
+                <div th:if="${pedidos != null and !pedidos.empty}">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead class="bg-light text-dark border-bottom">
+                            <tr>
+                                <th class="py-3" th:text="#{pedido.columna.codigo}"></th>
+                                <th class="py-3" th:text="#{pedido.columna.cliente}"></th>
+                                <th class="py-3" th:text="#{pedido.columna.fecha}"></th>
+                                <th class="py-3" th:text="#{pedido.columna.total}"></th>
+                                <th class="py-3" th:text="#{pedido.columna.estado}"></th>
+                                <th class="py-3" th:text="#{pedido.columna.accion}"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${pedidos}" class="border-bottom">
+                                <td class="py-3"><span th:text="#{pedido.codigo.prefijo}"></span><span th:text="${p.idPedido}"></span></td>
+                                <td class="py-3">
+                                    <span th:text="#{pedido.cliente.prefijo}"></span><span th:text="${p.idUsuario}"></span>
+                                </td>
+                                <td class="py-3">
+                                    <span th:if="${p.fechaPedido != null}" th:text="${#dates.format(p.fechaPedido, 'dd/MM/yyyy')}"></span>
+                                    <span th:unless="${p.fechaPedido != null}" th:text="#{pedido.no.disponible}"></span>
+                                </td>
+                                <td class="py-3"><span th:text="#{pedido.moneda}"></span><span th:text="${p.total}"></span></td>
+                                <td class="py-3">
+                                    <span class="badge rounded-pill"
+                                          th:classappend="${#strings.containsIgnoreCase(p.estadoPedido.nombre, 'pendiente') ? 'bg-warning text-dark' : (#strings.containsIgnoreCase(p.estadoPedido.nombre, 'prepar') ? 'bg-info text-dark' : (#strings.containsIgnoreCase(p.estadoPedido.nombre, 'cancel') ? 'bg-danger' : (#strings.containsIgnoreCase(p.estadoPedido.nombre, 'entreg') or #strings.containsIgnoreCase(p.estadoPedido.nombre, 'complet') ? 'bg-success' : (#strings.containsIgnoreCase(p.estadoPedido.nombre, 'enviado') ? 'bg-primary' : 'bg-secondary'))))}"
+                                          th:text="${p.estadoPedido.nombre}"></span>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a th:href="@{/pedido/detalle/{id}(id=${p.idPedido})}" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-eye me-1"></i><span th:text="#{accion.detalle}"></span>
+                                        </a>
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#pedidoModal"
+                                                th:attr="data-id=${p.idPedido},data-usuario=${p.idUsuario},data-total=${p.total},data-estado=${p.estadoPedido.idEstadoPedido},data-nombre-estado=${p.estadoPedido.nombre}">
+                                            <i class="fas fa-pen me-1"></i><span th:text="#{accion.actualizar}"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Cambia de página sin perder los filtros seleccionados. -->
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center mb-0">
+                            <!-- Botón Anterior -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/pedido/listado(page=${currentPage - 1}, fechaInicio=${fechaInicio}, fechaFin=${fechaFin}, idEstado=${idEstadoSeleccionado})}" th:text="#{accion.anterior}"></a>
+                            </li>
+
+                            <!-- Indicador de página actual -->
+                            <li class="page-item active">
+                                <span class="page-link" th:text="${currentPage + 1}"></span>
+                            </li>
+
+                            <!-- El botón se habilita si hay otra página disponible -->
+                            <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
+                                <a class="page-link" th:href="@{/pedido/listado(page=${currentPage + 1}, fechaInicio=${fechaInicio}, fechaFin=${fechaFin}, idEstado=${idEstadoSeleccionado})}" th:text="#{accion.siguiente}"></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="text-center p-4" th:if="${pedidos == null or pedidos.empty}">
+                    <span class="text-muted" th:text="#{pedido.vacio}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para actualizar el estado del pedido seleccionado. -->
+    <div class="modal fade" id="pedidoModal" tabindex="-1" aria-labelledby="pedidoModalTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/pedido/guardar}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pedidoModalTitulo" th:data-titulo="#{pedido.modal.actualizar}" th:data-prefijo-cliente="#{pedido.cliente.prefijo}" th:data-moneda="#{pedido.moneda}" th:text="#{pedido.modal.actualizar}"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" th:aria-label="#{accion.cerrar}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="idPedido" id="pedidoId"/>
+                        <input type="hidden" name="idUsuario" id="pedidoUsuario"/>
+                        <input type="hidden" name="total" id="pedidoTotal"/>
+                        <p class="mb-1"><span th:text="#{pedido.columna.cliente}"></span>: <span id="lblCliente"></span></p>
+                        <p class="mb-3"><span th:text="#{pedido.columna.total}"></span>: <strong id="lblTotal"></strong></p>
+                        <label for="estadoId" class="form-label" th:text="#{pedido.modal.estado}"></label>
+                        <select class="form-select" name="estadoPedido.idEstadoPedido" id="estadoId" required>
+                            <option th:each="estado : ${estados}" th:value="${estado.idEstadoPedido}" th:text="${estado.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{accion.cancelar}"></button>
+                        <button type="submit" class="btn btn-success" th:text="#{accion.guardar}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/pedido.js}"></script>
+</section>
+
+<section th:fragment="detalle" class="pb-5">
+    <div class="bg-success text-white py-3 mb-4">
+        <div class="container">
+            <h4 class="m-0 fw-bold" th:text="#{pedido.titulo.detalle}"></h4>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card border shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-bottom pb-3 mb-3">
+                    <h4 class="fw-bold m-0"><span th:text="#{pedido.codigo.prefijo}"></span><span th:text="${pedido.idPedido}"></span></h4>
+                    <span class="badge rounded-pill fs-6"
+                          th:classappend="${#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'pendiente') ? 'bg-warning text-dark' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'prepar') ? 'bg-info text-dark' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'cancel') ? 'bg-danger' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'entreg') or #strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'complet') ? 'bg-success' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'enviado') ? 'bg-primary' : 'bg-secondary'))))}"
+                          th:text="${pedido.estadoPedido.nombre}"></span>
+                </div>
+
+                <!-- Líneas con los productos, cantidades, precios y subtotales. -->
+                <h5 class="fw-bold mb-3" th:text="#{pedido.detalle.productos}"></h5>
+                <div class="table-responsive mb-4" th:if="${detalles != null and !detalles.empty}">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{pedido.detalle.producto}"></th>
+                                <th class="text-end" th:text="#{pedido.detalle.cantidad}"></th>
+                                <th class="text-end" th:text="#{pedido.detalle.precio}"></th>
+                                <th class="text-end" th:text="#{pedido.detalle.subtotal}"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="detalle : ${detalles}">
+                                <td>
+                                    <span th:text="#{pedido.producto.prefijo}"></span><span th:text="${detalle.idProducto}"></span>
+                                </td>
+                                <td class="text-end" th:text="${detalle.cantidad}"></td>
+                                <td class="text-end"><span th:text="#{pedido.moneda}"></span><span th:text="${detalle.precio}"></span></td>
+                                <td class="text-end fw-bold"><span th:text="#{pedido.moneda}"></span><span th:text="${detalle.subtotal}"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert alert-light border mb-4" th:if="${detalles == null or detalles.empty}">
+                    <span th:text="#{pedido.detalle.vacio}"></span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle mb-4">
+                        <tbody>
+                            <tr class="border-bottom">
+                                <th class="py-3 text-muted" th:text="#{pedido.columna.cliente}"></th>
+                                <td class="py-3">
+                                    <span th:text="#{pedido.cliente.prefijo}"></span><span th:text="${pedido.idUsuario}"></span>
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <th class="py-3 text-muted" th:text="#{pedido.fecha}"></th>
+                                <td class="py-3">
+                                    <span th:if="${pedido.fechaPedido != null}" th:text="${#dates.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span>
+                                    <span th:unless="${pedido.fechaPedido != null}" th:text="#{pedido.no.disponible}"></span>
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <th class="py-3 text-muted" th:text="#{pedido.total}"></th>
+                                <td class="py-3 fw-bold text-success"><span th:text="#{pedido.moneda}"></span><span th:text="${totalDetalles}"></span></td>
+                            </tr>
+                            <tr>
+                                <th class="py-3 text-muted" th:text="#{pedido.columna.estado}"></th>
+                                <td class="py-3">
+                                    <span class="badge rounded-pill"
+                                          th:classappend="${#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'pendiente') ? 'bg-warning text-dark' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'prepar') ? 'bg-info text-dark' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'cancel') ? 'bg-danger' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'entreg') or #strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'complet') ? 'bg-success' : (#strings.containsIgnoreCase(pedido.estadoPedido.nombre, 'enviado') ? 'bg-primary' : 'bg-secondary'))))}"
+                                          th:text="${pedido.estadoPedido.nombre}"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a th:href="@{/pedido/listado}" class="btn btn-secondary px-4" th:text="#{pedido.volver}"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
