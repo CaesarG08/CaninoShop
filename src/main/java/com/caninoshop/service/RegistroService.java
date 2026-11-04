@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegistroService {
+
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
@@ -23,24 +24,33 @@ public class RegistroService {
 
     @Transactional
     public void crearUsuario(Usuario datos) {
-        if (usuarioRepository.existsByUsername(datos.getUsername())) {
-            throw new IllegalArgumentException("El nombre de usuario ya existe.");
-        }
-        if (usuarioRepository.existsByCorreo(datos.getCorreo())) {
+        String correo = datos.getCorreo() == null ? "" : datos.getCorreo().trim();
+        if (usuarioRepository.existsByCorreo(correo)) {
             throw new IllegalArgumentException("El correo ya esta registrado.");
         }
+
+        String cedula = datos.getCedula() == null ? null : datos.getCedula().trim();
+        if (cedula != null && cedula.isEmpty()) {
+            cedula = null;
+        }
+        if (cedula != null && usuarioRepository.existsByCedula(cedula)) {
+            throw new IllegalArgumentException("La cedula ya esta registrada.");
+        }
+
         Rol rolCliente = rolRepository.findByRol("CLIENTE")
-                .orElseThrow(() -> new IllegalStateException("Falta el rol CLIENTE en la base de datos."));
-        // Nunca tomar los roles ni el estado desde el formulario publico.
+                .orElseThrow(() -> new IllegalStateException(
+                        "El rol CLIENTE no existe en la tabla rol."));
+
         Usuario usuario = new Usuario();
-        usuario.setUsername(datos.getUsername());
+        usuario.setCedula(cedula);
         usuario.setNombre(datos.getNombre());
         usuario.setApellidos(datos.getApellidos());
-        usuario.setCorreo(datos.getCorreo());
+        usuario.setCorreo(correo);
         usuario.setTelefono(datos.getTelefono());
+        usuario.setDireccion(datos.getDireccion());
         usuario.setPassword(passwordEncoder.encode(datos.getPassword()));
         usuario.setActivo(true);
-        usuario.getRoles().add(rolCliente);
+        usuario.setRol(rolCliente);
         usuarioRepository.save(usuario);
     }
 }

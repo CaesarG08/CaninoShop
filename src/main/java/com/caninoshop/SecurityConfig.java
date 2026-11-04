@@ -10,25 +10,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    private final com.caninoshop.security.InicioSesion2FAHandler segundoFactor;
-
-    public SecurityConfig(com.caninoshop.security.InicioSesion2FAHandler segundoFactor) {
-        this.segundoFactor = segundoFactor;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers("/", "/login", "/registro/**", "/acceso_denegado",
-                        "/webjars/**", "/js/**", "/css/**", "/fav/**",
-                        "/seguridad/2fa", "/seguridad/2fa/activar",
-                        "/seguridad/2fa/verificar", "/seguridad/2fa/cancelar").permitAll()
-                .requestMatchers("/seguridad/2fa/codigos").authenticated()
+                        "/webjars/**", "/js/**", "/css/**", "/fav/**").permitAll()
                 .requestMatchers("/usuario/**").hasRole("ADMIN")
                 .requestMatchers("/categoria/**", "/producto/guardar", "/producto/nuevo",
                         "/producto/modificar/**", "/producto/eliminar/**").hasRole("ADMIN")
-                .requestMatchers("/pedido/gestion/**", "/pedido/estado/**").hasAnyRole("ADMIN", "VENDEDOR")
-                .requestMatchers("/carrito/**", "/pedido/**").authenticated()
+                // Gestión global de pedidos: solo personal autorizado.
+                .requestMatchers("/pedido/**").hasAnyRole("ADMIN", "VENDEDOR")
+                // Compras e historial del cliente autenticado.
+                .requestMatchers("/carrito/**", "/mispedidos/**").authenticated()
                 .requestMatchers("/producto/listado", "/producto/detalle/**",
                         "/producto/buscar", "/producto/destacados").permitAll()
                 .requestMatchers("/producto/**").hasRole("ADMIN")
@@ -36,7 +29,8 @@ public class SecurityConfig {
         ).formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .successHandler(segundoFactor)
+                .usernameParameter("correo")
+                .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
         ).logout(logout -> logout

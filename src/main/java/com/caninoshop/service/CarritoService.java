@@ -27,7 +27,7 @@ public class CarritoService {
     // Devuelve el carrito abierto del cliente; si todavía no tiene, lo crea.
     @Transactional
     public Carrito getCarritoAbierto(String username) {
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        Usuario usuario = usuarioRepository.findByCorreo(username)
                 .orElseThrow(() -> new CarritoException("carrito.error.usuario"));
         return carritoRepository
                 .findFirstByUsuario_IdUsuarioAndEstado(usuario.getIdUsuario(), Carrito.ABIERTO)
@@ -57,7 +57,7 @@ public class CarritoService {
     // Unidades en el carrito, para el contador del menú. No crea el carrito si no existe.
     @Transactional(readOnly = true)
     public long contarUnidades(String username) {
-        return usuarioRepository.findByUsername(username)
+        return usuarioRepository.findByCorreo(username)
                 .flatMap(u -> carritoRepository
                 .findFirstByUsuario_IdUsuarioAndEstado(u.getIdUsuario(), Carrito.ABIERTO))
                 .map(c -> detalleCarritoRepository.contarUnidades(c.getIdCarrito()))

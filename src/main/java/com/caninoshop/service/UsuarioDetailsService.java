@@ -2,7 +2,7 @@ package com.caninoshop.service;
 
 import com.caninoshop.domain.Usuario;
 import com.caninoshop.repository.UsuarioRepository;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,13 +22,17 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username)
+    public UserDetails loadUserByUsername(String correo)
             throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsernameAndActivoTrue(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-        var roles = usuario.getRoles().stream()
-                .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getRol()))
-                .collect(Collectors.toSet());
-        return new User(usuario.getUsername(), usuario.getPassword(), roles);
+
+        Usuario usuario = usuarioRepository.findByCorreoAndActivoTrue(correo)
+                .orElseThrow(() -> new UsernameNotFoundException("Cuenta no encontrada"));
+
+        if (usuario.getRol() == null) {
+            throw new UsernameNotFoundException("Cuenta sin rol asignado");
+        }
+
+        return new User(usuario.getCorreo(), usuario.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().getRol())));
     }
 }

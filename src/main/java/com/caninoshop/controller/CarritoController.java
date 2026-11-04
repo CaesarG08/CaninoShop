@@ -104,7 +104,7 @@ public class CarritoController {
         }
         model.addAttribute("detalles", detalles);
         model.addAttribute("total", carritoService.calcularTotal(detalles));
-        model.addAttribute("cliente", usuarioRepository.findByUsername(principal.getName()).orElse(null));
+        model.addAttribute("cliente", usuarioRepository.findByCorreo(principal.getName()).orElse(null));
         return "carrito/pagar";
     }
 

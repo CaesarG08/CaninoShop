@@ -88,7 +88,7 @@ public class CompraService {
     // HU15: pedidos del cliente, del más reciente al más antiguo.
     @Transactional(readOnly = true)
     public List<Pedido> getPedidosCliente(String username) {
-        return usuarioRepository.findByUsername(username)
+        return usuarioRepository.findByCorreo(username)
                 .map(u -> pedidoRepository.findByIdUsuario(u.getIdUsuario().longValue()).stream()
                 .sorted(Comparator.comparing(Pedido::getIdPedido).reversed())
                 .toList())
@@ -98,7 +98,7 @@ public class CompraService {
     // Un pedido solo se muestra a su dueño; si es de otro cliente se trata como inexistente.
     @Transactional(readOnly = true)
     public Pedido getPedidoCliente(String username, Long idPedido) {
-        return usuarioRepository.findByUsername(username)
+        return usuarioRepository.findByCorreo(username)
                 .flatMap(u -> pedidoRepository.findById(idPedido)
                 .filter(p -> p.getIdUsuario().equals(u.getIdUsuario().longValue())))
                 .orElseThrow(() -> new CarritoException("pedido.cliente.error.noExiste"));
