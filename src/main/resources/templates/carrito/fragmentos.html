@@ -1,0 +1,272 @@
+<!-- Fragmento 1: alertas con el resultado de la última acción (mensajes que envía el controlador) -->
+<div th:fragment="alertas">
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="status" th:if="${todoOk != null}">
+        <i class="fas fa-circle-check me-2"></i>
+        <span th:text="${todoOk}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" th:aria-label="#{accion.cerrar}"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" th:if="${error != null}">
+        <i class="fas fa-circle-exclamation me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" th:aria-label="#{accion.cerrar}"></button>
+    </div>
+</div>
+
+<!-- Fragmento 2: botón para agregar un producto al carrito.
+     El catálogo lo usa así:  <div th:replace="~{carrito/fragmentos :: agregar(${p.idProducto})}"></div> -->
+<form th:fragment="agregar(idProducto)" th:action="@{/carrito/agregar}" method="post" class="d-flex gap-2">
+    <input type="hidden" name="idProducto" th:value="${idProducto}"/>
+    <input type="number" name="cantidad" value="1" min="1" class="form-control form-control-sm" style="width: 5rem;"
+           th:aria-label="#{carrito.cantidad}"/>
+    <button type="submit" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-cart-plus"></i> [[#{carrito.agregar}]]
+    </button>
+</form>
+
+<!-- Fragmento 3: carrito de compras (HU12) -->
+<section th:fragment="listado" class="pb-5">
+    <div class="bg-success text-white py-3 mb-4">
+        <div class="container">
+            <h4 class="m-0 fw-bold"><i class="fa-solid fa-cart-shopping me-2"></i>[[#{carrito.titulo}]]</h4>
+        </div>
+    </div>
+
+    <div class="container">
+        <div th:replace="~{carrito/fragmentos :: alertas}"></div>
+
+        <div class="card border shadow-sm" th:if="${detalles != null and !detalles.empty}">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>[[#{carrito.producto}]]</th>
+                                <th class="text-end">[[#{carrito.precio}]]</th>
+                                <th class="text-center">[[#{carrito.cantidad}]]</th>
+                                <th class="text-end">[[#{carrito.subtotal}]]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="d : ${detalles}">
+                                <td>
+                                    <strong th:text="${d.producto.nombre}"></strong>
+                                    <div class="small text-muted">
+                                        [[#{carrito.disponibles}]]: [[${d.producto.stock}]]
+                                    </div>
+                                </td>
+                                <td class="text-end">[[#{moneda}]][[${#numbers.formatDecimal(d.producto.precio, 1, 'COMMA', 2, 'POINT')}]]</td>
+                                <td class="text-center">
+                                    <!-- Cambia la cantidad sin salir de la tabla -->
+                                    <form th:action="@{/carrito/actualizar}" method="post" class="d-inline-flex gap-1 justify-content-center">
+                                        <input type="hidden" name="idDetalle" th:value="${d.idDetalleCarrito}"/>
+                                        <input type="number" name="cantidad" th:value="${d.cantidad}" min="1"
+                                               th:max="${d.producto.stock}"
+                                               class="form-control form-control-sm" style="width: 5rem;" required/>
+                                        <button type="submit" class="btn btn-outline-primary btn-sm"
+                                                th:title="#{accion.actualizar}">
+                                            <i class="fa-solid fa-rotate"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="text-end fw-bold">[[#{moneda}]][[${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}]]</td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal" data-bs-target="#quitarModal"
+                                            th:data-id="${d.idDetalleCarrito}"
+                                            th:data-nombre="${d.producto.nombre}">
+                                        <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end fs-5">[[#{carrito.total}]]</th>
+                                <th class="text-end fs-5 text-success">[[#{moneda}]][[${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}]]</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/}" class="btn btn-secondary">
+                            <i class="fa-solid fa-arrow-left"></i> [[#{carrito.seguir}]]
+                        </a>
+                        <form th:action="@{/carrito/vaciar}" method="post">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fa-solid fa-broom"></i> [[#{carrito.vaciar}]]
+                            </button>
+                        </form>
+                    </div>
+                    <a th:href="@{/carrito/pagar}" class="btn btn-success px-4">
+                        <i class="fa-solid fa-credit-card"></i> [[#{carrito.pagar}]]
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carrito sin productos -->
+        <div class="card border shadow-sm text-center p-5" th:if="${detalles == null or detalles.empty}">
+            <i class="fa-solid fa-cart-shopping fa-3x text-secondary mb-3"></i>
+            <h5>[[#{carrito.vacio}]]</h5>
+            <p class="text-muted">[[#{carrito.vacio.texto}]]</p>
+            <div><a th:href="@{/}" class="btn btn-success">[[#{carrito.seguir}]]</a></div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar que se quita un producto -->
+    <div class="modal fade" id="quitarModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/carrito/eliminar}" method="post">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">[[#{carrito.quitar.titulo}]]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" th:aria-label="#{accion.cerrar}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="idDetalle" id="quitarId"/>
+                        <p>[[#{carrito.quitar.texto}]] <strong id="quitarNombre"></strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">[[#{accion.cancelar}]]</button>
+                        <button type="submit" class="btn btn-danger">[[#{accion.eliminar}]]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fragmento 4: resumen de la compra antes de pagar (HU13) -->
+<section th:fragment="pagar" class="pb-5">
+    <div class="bg-success text-white py-3 mb-4">
+        <div class="container">
+            <h4 class="m-0 fw-bold"><i class="fa-solid fa-credit-card me-2"></i>[[#{carrito.pagar.titulo}]]</h4>
+        </div>
+    </div>
+
+    <div class="container">
+        <div th:replace="~{carrito/fragmentos :: alertas}"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card border shadow-sm">
+                    <div class="card-header bg-light fw-bold">[[#{carrito.resumen}]]</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>[[#{carrito.producto}]]</th>
+                                        <th class="text-end">[[#{carrito.precio}]]</th>
+                                        <th class="text-center">[[#{carrito.cantidad}]]</th>
+                                        <th class="text-end">[[#{carrito.subtotal}]]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="d : ${detalles}">
+                                        <td th:text="${d.producto.nombre}"></td>
+                                        <td class="text-end">[[#{moneda}]][[${#numbers.formatDecimal(d.producto.precio, 1, 'COMMA', 2, 'POINT')}]]</td>
+                                        <td class="text-center" th:text="${d.cantidad}"></td>
+                                        <td class="text-end fw-bold">[[#{moneda}]][[${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}]]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Datos del cliente que compra -->
+                <div class="card border shadow-sm mb-3" th:if="${cliente != null}">
+                    <div class="card-header bg-light fw-bold">[[#{carrito.cliente}]]</div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong th:text="${cliente.nombre + ' ' + cliente.apellidos}"></strong></p>
+                        <p class="mb-1 small text-muted"><i class="fa-solid fa-envelope me-1"></i>[[${cliente.correo}]]</p>
+                        <p class="mb-0 small text-muted" th:if="${cliente.telefono != null}">
+                            <i class="fa-solid fa-phone me-1"></i>[[${cliente.telefono}]]
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card border shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between fs-5 mb-3">
+                            <span>[[#{carrito.total}]]</span>
+                            <strong class="text-success">[[#{moneda}]][[${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}]]</strong>
+                        </div>
+                        <form th:action="@{/carrito/confirmar}" method="post" class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fa-solid fa-check"></i> [[#{carrito.confirmar}]]
+                            </button>
+                            <a th:href="@{/carrito/listado}" class="btn btn-outline-secondary">[[#{carrito.volver}]]</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fragmento 5: confirmación del pedido recién registrado (HU14) -->
+<section th:fragment="confirmacion" class="pb-5">
+    <div class="bg-success text-white py-3 mb-4">
+        <div class="container">
+            <h4 class="m-0 fw-bold"><i class="fa-solid fa-circle-check me-2"></i>[[#{carrito.confirmacion.titulo}]]</h4>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card border shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-paw fa-3x text-success mb-2"></i>
+                    <h4 class="fw-bold">[[#{carrito.confirmacion.gracias}]]</h4>
+                    <p class="text-muted mb-1">
+                        [[#{carrito.confirmacion.numero}]]
+                        <strong>[[#{pedido.codigo.prefijo}]][[${pedido.idPedido}]]</strong>
+                    </p>
+                    <span class="badge rounded-pill bg-warning text-dark fs-6" th:text="${pedido.estadoPedido.nombre}"></span>
+                </div>
+
+                <div class="table-responsive mb-3">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>[[#{carrito.producto}]]</th>
+                                <th class="text-end">[[#{carrito.cantidad}]]</th>
+                                <th class="text-end">[[#{carrito.precio}]]</th>
+                                <th class="text-end">[[#{carrito.subtotal}]]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="d : ${detalles}">
+                                <td th:text="${nombres[d.idProducto]}"></td>
+                                <td class="text-end" th:text="${d.cantidad}"></td>
+                                <td class="text-end">[[#{moneda}]][[${#numbers.formatDecimal(d.precio, 1, 'COMMA', 2, 'POINT')}]]</td>
+                                <td class="text-end fw-bold">[[#{moneda}]][[${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}]]</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end fs-5">[[#{carrito.total}]]</th>
+                                <th class="text-end fs-5 text-success">[[#{moneda}]][[${#numbers.formatDecimal(totalDetalles, 1, 'COMMA', 2, 'POINT')}]]</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a th:href="@{/mispedidos/listado}" class="btn btn-success">
+                        <i class="fa-solid fa-box"></i> [[#{carrito.confirmacion.mis}]]
+                    </a>
+                    <a th:href="@{/}" class="btn btn-outline-secondary">[[#{carrito.seguir}]]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
