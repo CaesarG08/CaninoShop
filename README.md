@@ -73,7 +73,7 @@ El equipo seleccionó 10 historias para el alcance comprometido del Avance 2. La
 | HU08 | Productos destacados o más comprados | Génesis | No seleccionada para Avance 2 |
 | HU09 | Administración de categorías | Génesis | Completa Avance 2 |
 | HU10 | Actualización de existencias | Génesis | Completa Avance 2 |
-| HU11 | Agregar productos al carrito | César | Seleccionada para Avance 2 |
+| HU11 | Agregar productos al carrito | César | Completa Avance 2  |
 | HU12 | Gestionar el carrito de compras | César | No seleccionada para Avance 2 |
 | HU13 | Revisión previa del pedido | César | Completa Avance 2 |
 | HU14 | Confirmación y registro del pedido | César | Completa Avance 2 |
