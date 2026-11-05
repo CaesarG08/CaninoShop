@@ -1,14 +1,17 @@
 package com.caninoshop.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// NOTA: entidad mínima mapeada a la tabla producto del script común.
-// El módulo de Catálogo (Génesis) es el dueño de esta clase; si ya existe en main se usa la suya.
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,23 +26,31 @@ public class Producto implements Serializable {
     @Column(name = "id_producto")
     private Integer idProducto;
 
-    @Column(name = "id_categoria", nullable = false)
-    private Integer idCategoria;
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private Categoria categoria = new Categoria();
 
+    @NotBlank
+    @Size(max = 150)
     @Column(nullable = false, unique = true, length = 150)
     private String nombre;
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
+    @NotNull
+    @DecimalMin("0.00")
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
+    @NotNull
+    @Min(0)
     @Column(nullable = false)
     private Integer stock;
 
     @Column(nullable = false)
-    private boolean estado;
+    private boolean estado = true;
 
     @Column(name = "ruta_imagen", length = 1024)
     private String rutaImagen;
