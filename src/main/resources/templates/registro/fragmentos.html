@@ -1,0 +1,109 @@
+<section th:fragment="formulario" class="container my-5">
+    <div class="row">
+        <div class="col-lg-7 mx-auto">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4>[[#{usuario.registrarse}]]</h4>
+                </div>
+
+                <div class="card-body">
+                    <div th:if="${error}"
+                         class="alert alert-danger"
+                         th:text="${error}"></div>
+
+                    <form th:action="@{/registro/crearUsuario}"
+                          method="post"
+                          th:object="${usuario}">
+                        <div class="mb-3">
+                            <label class="form-label">[[#{usuario.nombre}]]</label>
+                            <input type="text" class="form-control" th:field="*{nombre}"
+                                   maxlength="100" required/>
+                            <small class="text-danger" th:if="${#fields.hasErrors('nombre')}"
+                                   th:errors="*{nombre}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">[[#{usuario.apellidos}]]</label>
+                            <input type="text" class="form-control" th:field="*{apellidos}"
+                                   maxlength="150"/>
+                            <small class="text-danger" th:if="${#fields.hasErrors('apellidos')}"
+                                   th:errors="*{apellidos}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Cédula (opcional)</label>
+                            <input type="text" class="form-control" th:field="*{cedula}"
+                                   maxlength="20"/>
+                            <small class="text-danger" th:if="${#fields.hasErrors('cedula')}"
+                                   th:errors="*{cedula}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">[[#{usuario.correo}]]</label>
+                            <input type="email" class="form-control" th:field="*{correo}"
+                                   maxlength="150" required/>
+                            <small class="text-danger" th:if="${#fields.hasErrors('correo')}"
+                                   th:errors="*{correo}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">[[#{usuario.telefono}]]</label>
+                            <input type="text" class="form-control" th:field="*{telefono}"
+                                   maxlength="20"/>
+                            <small class="text-danger" th:if="${#fields.hasErrors('telefono')}"
+                                   th:errors="*{telefono}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Dirección de entrega (opcional)</label>
+                            <textarea class="form-control" th:field="*{direccion}" rows="3"
+                                      placeholder="Provincia, cantón, distrito y dirección exacta"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">[[#{usuario.password}]]</label>
+                            <input type="password" class="form-control" th:field="*{password}"
+                                   required/>
+                            <small class="text-danger" th:if="${#fields.hasErrors('password')}"
+                                   th:errors="*{password}"></small>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            [[#{accion.registrar}]]
+                        </button>
+                        <a th:href="@{/login}" class="btn btn-secondary">
+                            [[#{accion.regresar}]]
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section th:fragment="login"
+         class="container my-4 d-flex flex-column justify-content-center flex-grow-1">
+    <div class="card border-0 shadow-sm mx-auto w-100" style="max-width: 390px;">
+        <div class="card-body p-4">
+            <h2 class="h4 fw-bold mb-1">[[#{usuario.login}]]</h2>
+            <p class="text-muted small mb-3">Ingresa con tu cuenta para continuar</p>
+
+            <div class="alert alert-success" th:if="${todoOk}" th:text="${todoOk}"></div>
+            <div class="alert alert-danger" th:if="${param.error}">[[#{usuario.errorLogin}]]</div>
+            <div class="alert alert-info" th:if="${param.logout}">[[#{usuario.sesionCerrada}]]</div>
+
+            <form method="post" th:action="@{/login}">
+                <label for="correo" class="form-label small fw-semibold">Correo electrónico</label>
+                <input id="correo" name="correo" type="email" maxlength="150"
+                       class="form-control mb-3" placeholder="cliente@correo.com" required/>
+                <label for="password" class="form-label small fw-semibold">[[#{usuario.password}]]</label>
+                <input id="password" name="password" type="password"
+                       class="form-control mb-3" placeholder="••••••••" required/>
+                <button type="submit" class="btn btn-success w-100 mb-2">Ingresar</button>
+                <a class="btn btn-outline-success w-100 mb-2" th:href="@{/registro/nuevo}">
+                    [[#{usuario.registrarse}]]
+                </a>
+            </form>
+        </div>
+    </div>
+</section>
