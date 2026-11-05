@@ -7,6 +7,13 @@
     <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 </head>
 
 <!-- Encabezado y menú -->
@@ -16,68 +23,78 @@
         class="container-fluid p-0"
         xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2">
         <div class="container">
 
-            <a class="navbar-brand" th:href="@{/}">
+            <a class="navbar-brand d-flex align-items-center text-success fw-semibold" th:href="@{/}">
+                <span class="d-inline-flex align-items-center justify-content-center rounded bg-success text-white fw-bold me-2"
+                      style="width: 32px; height: 32px; font-size: .75rem;">CS</span>
                 CaninoShop
             </a>
 
-            <div class="d-flex gap-2 align-items-center">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#caninoNavbar" aria-controls="caninoNavbar"
+                    aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <a class="btn btn-outline-light btn-sm"
-                   th:href="@{/}">
-                    Inicio
-                </a>
+            <div class="collapse navbar-collapse" id="caninoNavbar">
+                <div class="navbar-nav ms-lg-auto align-items-lg-center gap-lg-1">
+                    <a class="nav-link px-lg-2" th:href="@{/}">Inicio</a>
+                    <!-- Visitantes sin iniciar sesión -->
+                    <a sec:authorize="isAnonymous()" class="nav-link px-lg-2"
+                       th:href="@{/registro/nuevo}">Crear cuenta</a>
+                    <a sec:authorize="isAnonymous()" class="nav-link px-lg-2 text-success fw-semibold"
+                       th:href="@{/login}">Iniciar sesión</a>
 
-                <!-- Visitantes sin iniciar sesion -->
-                <a sec:authorize="isAnonymous()"
-                   class="btn btn-outline-light btn-sm"
-                   th:href="@{/registro/nuevo}">
-                    Crear cuenta
-                </a>
+                    <!-- Pedidos personales para cualquier usuario autenticado -->
+                    <a sec:authorize="hasRole('CLIENTE')" class="nav-link px-lg-2"
+                       th:href="@{/mispedidos/listado}">
+                        <i class="fa-solid fa-box me-1"></i> [[#{menu.mispedidos}]]
+                    </a>
 
-                <a sec:authorize="isAnonymous()"
-                   class="btn btn-light btn-sm"
-                   th:href="@{/login}">
-                    Iniciar sesión
-                </a>
+                    <!-- Gestión global de pedidos, solo para administradores -->
+                    <a sec:authorize="hasAnyRole('ADMIN','ENCARGADO')" class="nav-link px-lg-2"
+                       th:href="@{/pedido/listado}">
+                        [[#{menu.pedidos}]]
+                    </a>
 
-                <!-- Carrito y pedidos del cliente -->
-                <a sec:authorize="isAuthenticated()"
-                   class="btn btn-outline-light btn-sm"
-                   th:href="@{/mispedidos/listado}">
-                    <i class="fa-solid fa-box"></i> [[#{menu.mispedidos}]]
-                </a>
+                    <a sec:authorize="hasAnyRole('ADMIN','ENCARGADO')" class="nav-link px-lg-2"
+                       th:href="@{/producto/administrar}">[[#{menu.productos}]]</a>
 
-                <a sec:authorize="isAuthenticated()"
-                   class="btn btn-warning btn-sm position-relative"
-                   th:href="@{/carrito/listado}">
-                    <i class="fa-solid fa-cart-shopping"></i> [[#{menu.carrito}]]
-                    <span class="badge text-bg-danger"
-                          th:if="${cantidadCarrito != null and cantidadCarrito > 0}"
-                          th:text="${cantidadCarrito}"></span>
-                </a>
+                    <a sec:authorize="hasRole('ADMIN')" class="nav-link px-lg-2"
+                       th:href="@{/categoria/listado}">[[#{menu.categorias}]]</a>
 
-                <!-- Nombre del usuario autenticado -->
-                <span sec:authorize="isAuthenticated()"
-                      class="text-white me-2">
-                    Usuario:
-                    <strong sec:authentication="name"></strong>
-                </span>
+                    <a sec:authorize="hasRole('CLIENTE')" class="nav-link px-lg-2"
+                       th:href="@{/carrito/listado}">
+                        <i class="fa-solid fa-cart-shopping me-1"></i> [[#{menu.carrito}]]
+                        <span class="badge rounded-pill text-bg-warning"
+                              th:if="${cantidadCarrito != null and cantidadCarrito > 0}"
+                              th:text="${cantidadCarrito}"></span>
+                    </a>
+                </div>
 
-                <!-- Cerrar sesion -->
-                <form sec:authorize="isAuthenticated()"
-                      th:action="@{/logout}"
-                      method="post"
-                      class="d-inline">
+                <div sec:authorize="isAuthenticated()"
+                     class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 ms-lg-3 py-2 py-lg-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success-subtle text-success"
+                              style="width: 34px; height: 34px;">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <span class="d-flex flex-column lh-sm" style="max-width: 190px;">
+                            <span class="text-muted small">Usuario</span>
+                            <strong class="small text-dark text-truncate"
+                                    style="max-width: 190px;"
+                                    sec:authentication="name"></strong>
+                        </span>
+                    </div>
 
-                    <button type="submit"
-                            class="btn btn-light btn-sm">
-                        Cerrar sesión
-                    </button>
-
-                </form>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
 
             </div>
         </div>
@@ -90,7 +107,7 @@
 
 <!-- Derechos de autor -->
 <footer th:fragment="footer"
-        class="container-fluid text-center py-4 mt-5"
+        class="container-fluid text-center py-4 mt-auto"
         style="background-color: #e6eee4; color: #315c43;">
-
+    <small>&copy; 2026 CaninoShop. Todos los derechos reservados.</small>
 </footer>

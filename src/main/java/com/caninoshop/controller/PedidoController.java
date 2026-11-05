@@ -56,25 +56,31 @@ public class PedidoController {
         return "pedido/listado";
     }
 
-    @PostMapping("/guardar") // Guarda el nuevo estado seleccionado para el pedido.
-    public String guardar(@ModelAttribute Pedido pedido, RedirectAttributes redirectAttributes) {
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Pedido pedido,
+            RedirectAttributes redirectAttributes) {
         try {
             Pedido pedidoActual = pedidoService.getPedido(pedido);
-            if (pedidoActual != null) {
-                // Actualiza solamente el estado y conserva los demás datos del pedido.
-                pedidoActual.setEstadoPedido(pedido.getEstadoPedido());
-                pedidoService.guardar(pedidoActual);
-            } else {
-                pedidoService.guardar(pedido);
+
+            if (pedidoActual == null) {
+                redirectAttributes.addFlashAttribute("error",
+                        messageSource.getMessage(
+                                "pedido.error.noExiste", null, Locale.getDefault()));
+                return "redirect:/pedido/listado";
             }
+
+            pedidoActual.setEstadoPedido(pedido.getEstadoPedido());
+            pedidoService.guardar(pedidoActual);
 
             redirectAttributes.addFlashAttribute("todoOk",
                     messageSource.getMessage("pedido.actualizado",
                             new Object[]{pedido.getIdPedido()}, Locale.getDefault()));
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error",
-                    messageSource.getMessage("pedido.error.actualizar", null, Locale.getDefault()));
+                    messageSource.getMessage("pedido.error.actualizar",
+                            null, Locale.getDefault()));
         }
+
         return "redirect:/pedido/listado";
     }
 

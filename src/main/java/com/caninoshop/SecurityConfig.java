@@ -16,12 +16,13 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/registro/**", "/acceso_denegado",
                         "/webjars/**", "/js/**", "/css/**", "/fav/**").permitAll()
                 .requestMatchers("/usuario/**").hasRole("ADMIN")
+                .requestMatchers("/producto/administrar")
+                .hasAnyRole("ADMIN", "ENCARGADO")
                 .requestMatchers("/categoria/**", "/producto/guardar", "/producto/nuevo",
-                        "/producto/modificar/**", "/producto/eliminar/**").hasRole("ADMIN")
-                // Gestión global de pedidos: solo personal autorizado.
-                .requestMatchers("/pedido/**").hasAnyRole("ADMIN", "VENDEDOR")
-                // Compras e historial del cliente autenticado.
-                .requestMatchers("/carrito/**", "/mispedidos/**").authenticated()
+                        "/producto/modificar/**", "/producto/eliminar", "/producto/eliminar/**")
+                .hasRole("ADMIN")
+                .requestMatchers("/pedido/**").hasAnyRole("ADMIN", "ENCARGADO")
+                .requestMatchers("/carrito/**", "/mispedidos/**").hasRole("CLIENTE")
                 .requestMatchers("/producto/listado", "/producto/detalle/**",
                         "/producto/buscar", "/producto/destacados").permitAll()
                 .requestMatchers("/producto/**").hasRole("ADMIN")

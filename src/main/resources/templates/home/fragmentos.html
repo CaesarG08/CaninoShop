@@ -1,51 +1,148 @@
-<section th:fragment="home" class="container py-4">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">Productos para tu perro</h2>
-        <p class="text-muted">
-            Todo lo que necesita tu mejor amigo en un mismo lugar.
-        </p>
-    </div>
-
-    <!-- Iteración de productos -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4"
-         th:if="${productos != null and !productos.isEmpty()}">
-
-        <div class="col" th:each="p : ${productos}">
-            <article class="card h-100 shadow-sm">
-
-                <!-- Imagen temporal (mientras le agregan rutas de imágenes reales) -->
-                <div class="bg-light text-center py-5 border-bottom">
-                    <i class="fa-solid fa-bone fa-3x text-secondary"></i>
-                </div>
-
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold" th:text="${p.nombre}">
-                        Nombre del producto
-                    </h5>
-
-                    <p class="card-text small mb-3 flex-grow-1"
-                       th:text="${p.descripcion}">
-                        Descripción breve del producto.
-                    </p>
-
-                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-                        <span class="text-success fw-bold fs-5">
-                            ₡<span th:text="${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
-                        </span>
-                        <a href="#" class="btn btn-sm btn-primary">Ver detalle</a>
-                    </div>
-                </div>
-            </article>
+<section xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+         th:fragment="home" class="d-flex flex-column flex-grow-1 bg-light">
+    <div class="bg-success text-white py-2">
+        <div class="container">
+            <h1 class="h5 mb-0" th:if="${esAdministrador}">Panel de administración</h1>
+            <h1 class="h5 mb-0" th:if="${esEncargado}">Panel del encargado</h1>
+            <h1 class="h5 mb-0" th:if="${!esAdministrador and !esEncargado}">Productos para tu perro</h1>
         </div>
     </div>
 
-    <!-- Mensaje cuando la base de datos está vacía -->
-    <div class="text-center py-5"
-         th:if="${productos == null or productos.isEmpty()}">
-        <i class="fa-solid fa-dog fa-3x text-secondary mb-3"></i>
-        <h5>No hay productos disponibles</h5>
-        <p class="text-muted">
-            Pronto agregaremos inventario a la tienda.
-        </p>
+    <div class="container py-4 flex-grow-1" th:if="${esAdministrador or esEncargado}">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+            <div class="col" th:if="${esAdministrador or esEncargado}">
+                <a th:href="@{/producto/administrar}"
+                   class="card h-100 border-0 shadow-sm text-decoration-none text-dark">
+                    <div class="card-body p-4">
+                        <i class="fa-solid fa-boxes-stacked fa-2x text-success mb-3"></i>
+                        <h2 class="h5 fw-bold">[[#{menu.productos}]]</h2>
+                        <p class="text-muted mb-0" th:if="${esAdministrador}">Consulta y administra productos e inventario.</p>
+                        <p class="text-muted mb-0" th:if="${esEncargado}">Consulta productos y existencias.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col" sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/categoria/listado}"
+                   class="card h-100 border-0 shadow-sm text-decoration-none text-dark">
+                    <div class="card-body p-4">
+                        <i class="fa-solid fa-tags fa-2x text-success mb-3"></i>
+                        <h2 class="h5 fw-bold">[[#{menu.categorias}]]</h2>
+                        <p class="text-muted mb-0">Administra las categorías de productos.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col">
+                <a th:href="@{/pedido/listado}"
+                   class="card h-100 border-0 shadow-sm text-decoration-none text-dark">
+                    <div class="card-body p-4">
+                        <i class="fa-solid fa-clipboard-list fa-2x text-success mb-3"></i>
+                        <h2 class="h5 fw-bold">[[#{menu.pedidos}]]</h2>
+                        <p class="text-muted mb-0" th:if="${esAdministrador}">Consulta y gestiona los pedidos recibidos.</p>
+                        <p class="text-muted mb-0" th:if="${esEncargado}">Consulta pedidos y actualiza su estado.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4 flex-grow-1" th:if="${!esAdministrador and !esEncargado}">
+        <div th:replace="~{carrito/fragmentos :: alertas}"></div>
+        <div class="mb-4">
+            <h2 class="h3 fw-bold mb-1">Todo lo que necesita tu mejor amigo</h2>
+            <p class="text-muted mb-3">Catálogo simple, disponibilidad visible y compras en un mismo lugar.</p>
+            <form th:action="@{/}" method="get" class="row g-2 mb-3">
+                <div class="col-md-7">
+                    <input type="search" name="nombre" class="form-control"
+                           th:value="${filtroNombre}" th:placeholder="#{producto.buscar}"
+                           th:aria-label="#{producto.buscar}"/>
+                </div>
+                <div class="col-md-3">
+                    <select name="idCategoria" class="form-select">
+                        <option value="" th:text="#{producto.categoria.todas}"></option>
+                        <option th:each="categoria : ${categorias}"
+                                th:value="${categoria.idCategoria}"
+                                th:text="${categoria.nombre}"
+                                th:selected="${categoria.idCategoria == idCategoriaSeleccionada}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-success">[[#{accion.buscar}]]</button>
+                </div>
+            </form>
+            <nav class="d-flex flex-wrap gap-2" aria-label="Categorías de productos">
+                <a th:href="@{/}" class="btn btn-sm rounded-pill"
+                   th:classappend="${idCategoriaSeleccionada == null ? 'btn-success' : 'btn-outline-success'}">Todos</a>
+                <a th:each="categoria : ${categorias}"
+                   th:href="@{/(idCategoria=${categoria.idCategoria})}"
+                   class="btn btn-sm rounded-pill"
+                   th:classappend="${idCategoriaSeleccionada != null and idCategoriaSeleccionada == categoria.idCategoria ? 'btn-success' : 'btn-outline-success'}"
+                   th:text="${categoria.nombre}"></a>
+            </nav>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-9">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4"
+                     th:if="${productos != null and !productos.isEmpty()}">
+                    <div class="col" th:each="producto : ${productos}">
+                        <article class="card h-100 shadow-sm border-0">
+                            <div class="bg-body-secondary text-center d-flex align-items-center justify-content-center border-bottom"
+                                 style="height: 175px;">
+                                <img th:if="${producto.rutaImagen != null and !producto.rutaImagen.isBlank()}"
+                                     th:src="${producto.rutaImagen}" th:alt="${producto.nombre}"
+                                     class="img-fluid p-2" style="max-height: 165px; object-fit: contain;"/>
+                                <span th:unless="${producto.rutaImagen != null and !producto.rutaImagen.isBlank()}"
+                                      class="text-muted">Imagen del producto</span>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <span class="badge rounded-pill text-bg-success align-self-start mb-2"
+                                      th:if="${producto.categoria != null}"
+                                      th:text="${producto.categoria.nombre}"></span>
+                                <h3 class="h6 fw-bold mb-1" th:text="${producto.nombre}"></h3>
+                                <p class="text-success fw-bold fs-5 mb-1">
+                                    [[#{moneda}]][[${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}]]
+                                </p>
+                                <p class="small mb-3"
+                                   th:classappend="${producto.stock > 0 ? 'text-success' : 'text-danger'}"
+                                   th:text="${producto.stock > 0 ? #messages.msg('producto.stock.disponible', producto.stock) : #messages.msg('producto.sin.stock')}"></p>
+                                <div class="d-grid gap-2 mt-auto">
+                                    <a th:if="${producto.estado}"
+                                       th:href="@{/producto/detalle/{id}(id=${producto.idProducto})}"
+                                       class="btn btn-primary btn-sm">[[#{accion.detalle}]]</a>
+                                    <div sec:authorize="hasRole('CLIENTE')" th:if="${producto.estado and producto.stock > 0}">
+                                        <div th:replace="~{carrito/fragmentos :: agregar(${producto.idProducto})}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="text-center bg-white rounded shadow-sm py-5"
+                     th:if="${productos == null or productos.isEmpty()}">
+                    <i class="fa-solid fa-dog fa-3x text-secondary mb-3"></i>
+                    <h3 class="h5">[[#{producto.sin.resultados}]]</h3>
+                    <p class="text-muted mb-0">Pronto agregaremos inventario a la tienda.</p>
+                </div>
+            </div>
+
+            <aside class="col-lg-3">
+                <div class="card border-0 shadow-sm bg-warning-subtle">
+                    <div class="card-body p-4">
+                        <h2 class="h5 fw-bold">Compra sencilla</h2>
+                        <ol class="small ps-3 mb-4">
+                            <li>Consulta productos.</li>
+                            <li>Agrega artículos disponibles.</li>
+                            <li>Confirma tu pedido.</li>
+                            <li>Consulta su estado.</li>
+                        </ol>
+                        <a sec:authorize="isAnonymous()" th:href="@{/login}"
+                           class="btn btn-success w-100">[[#{usuario.login}]]</a>
+                        <a sec:authorize="hasRole('CLIENTE')" th:href="@{/carrito/listado}"
+                           class="btn btn-success w-100">[[#{menu.carrito}]]</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 </section>
