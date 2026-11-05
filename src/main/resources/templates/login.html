@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+<header th:replace="~{general/fragmentos :: header}"></header>
+<main class="container my-5">
+    <div class="row"><div class="col-md-5 mx-auto"><div class="card">
+        <div class="card-header bg-success text-white"><h4>[[#{usuario.login}]]</h4></div>
+        <div class="card-body">
+            <div class="alert alert-success" th:if="${todoOk}" th:text="${todoOk}"></div>
+            <div class="alert alert-danger" th:if="${param.error}">[[#{usuario.errorLogin}]]</div>
+            <div class="alert alert-info" th:if="${param.logout}">[[#{usuario.sesionCerrada}]]</div>
+            <form method="post" th:action="@{/login}">
+                <label for="correo" class="form-label">[[#{usuario.correo}]]</label>
+                <input id="correo" name="correo" type="email" maxlength="150" class="form-control mb-3" required/>
+                <label for="password" class="form-label">[[#{usuario.password}]]</label>
+                <input id="password" name="password" type="password" class="form-control mb-3" required/>
+                <button type="submit" class="btn btn-success">[[#{usuario.login}]]</button>
+                <a class="btn btn-outline-primary" th:href="@{/registro/nuevo}">[[#{usuario.registrarse}]]</a>
+            </form>
+        </div>
+    </div></div></div>
+</main>
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body></html>

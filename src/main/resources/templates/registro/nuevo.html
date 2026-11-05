@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{general/fragmentos :: head}"></head>
+
+<body>
+
+<header th:replace="~{general/fragmentos :: header}"></header>
+
+<main class="container my-5">
+    <div class="row">
+        <div class="col-lg-7 mx-auto">
+            <div class="card">
+
+                <div class="card-header bg-success text-white">
+                    <h4>[[#{usuario.registrarse}]]</h4>
+                </div>
+
+                <div class="card-body">
+
+                    <div th:if="${error}"
+                         class="alert alert-danger"
+                         th:text="${error}">
+                    </div>
+
+                    <form th:action="@{/registro/crearUsuario}"
+                          method="post"
+                          th:object="${usuario}">
+
+                        
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                [[#{usuario.nombre}]]
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{nombre}"
+                                   maxlength="100"
+                                   required/>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('nombre')}"
+                                   th:errors="*{nombre}">
+                            </small>
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                [[#{usuario.apellidos}]]
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{apellidos}"
+                                   maxlength="150"/>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('apellidos')}"
+                                   th:errors="*{apellidos}">
+                            </small>
+                        </div>
+
+                        <!-- Cedula -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Cédula (opcional)
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{cedula}"
+                                   maxlength="20"/>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('cedula')}"
+                                   th:errors="*{cedula}">
+                            </small>
+                        </div>
+
+                        <!-- Correo -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                [[#{usuario.correo}]]
+                            </label>
+                            <input type="email"
+                                   class="form-control"
+                                   th:field="*{correo}"
+                                   maxlength="150"
+                                   required/>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('correo')}"
+                                   th:errors="*{correo}">
+                            </small>
+                        </div>
+
+                        <!-- Telefono -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                [[#{usuario.telefono}]]
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{telefono}"
+                                   maxlength="20"/>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('telefono')}"
+                                   th:errors="*{telefono}">
+                            </small>
+                        </div>
+
+                        <!-- Direccion de entrega -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Dirección de entrega (opcional)
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{direccion}"
+                                      rows="3"
+                                      placeholder="Provincia, cantón, distrito y dirección exacta"></textarea>
+                        </div>
+
+                        <!-- Contrasena -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                [[#{usuario.password}]]
+                            </label>
+                            <input type="password"
+                                   class="form-control"
+                                   th:field="*{password}"
+                                   required/>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('password')}"
+                                   th:errors="*{password}">
+                            </small>
+                        </div>
+
+                        <!-- Botones -->
+                        <button type="submit"
+                                class="btn btn-success">
+                            [[#{accion.registrar}]]
+                        </button>
+
+                        <a th:href="@{/login}"
+                           class="btn btn-secondary">
+                            [[#{accion.regresar}]]
+                        </a>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+
+</body>
+</html>
