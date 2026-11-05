@@ -48,7 +48,7 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
 
 5. Abre [http://localhost:82](http://localhost:82). Crea una cuenta desde **Crear cuenta**; el registro público asigna el rol `CLIENTE` y guarda la contraseña cifrada.
 
-No se proporciona una cuenta preconfigurada de `ADMIN` o `ENCARGADO`. Para demostrar esos permisos, el equipo debe usar cuentas preparadas para la demostración y asignarles el rol correspondiente en la base de datos. No incluyas contraseñas reales en el repositorio.
+No se proporciona una cuenta preconfigurada de `ADMIN` o `ENCARGADO`.
 
 ## Funciones y acceso por rol
 
@@ -63,23 +63,23 @@ El equipo seleccionó 10 historias para el alcance comprometido del Avance 2. La
 
 | HU | Historia | Responsable | Estado |
 |---|---|---|---|
-| HU01 | Registro de clientes | Carlos | Seleccionada para Avance 2 |
-| HU02 | Inicio de sesión | Carlos | Seleccionada para Avance 2 |
+| HU01 | Registro de clientes | Carlos | Completa Avance 2|
+| HU02 | Inicio de sesión | Carlos | Completa Avance 2 |
 | HU03 | Gestión del perfil de usuario | Carlos | No seleccionada para Avance 2 |
 | HU04 | Administración de roles de usuario | Carlos | No seleccionada para Avance 2 |
-| HU05 | Acceso a funcionalidades según rol | Carlos | Implementada fuera de las 10 seleccionadas |
-| HU06 | Consultar catálogo de productos | Génesis | Seleccionada para Avance 2 |
-| HU07 | Buscar productos por nombre | Génesis | Implementada fuera de las 10 seleccionadas |
+| HU05 | Acceso a funcionalidades según rol | Carlos | Completa Avance 2. Implementada fuera de las 10 seleccionadas |
+| HU06 | Consultar catálogo de productos | Génesis | Completa Avance 2 |
+| HU07 | Buscar productos por nombre | Génesis | Completa Avance 2. Implementada fuera de las 10 seleccionadas |
 | HU08 | Productos destacados o más comprados | Génesis | No seleccionada para Avance 2 |
-| HU09 | Administración de categorías | Génesis | Seleccionada para Avance 2 |
-| HU10 | Actualización de existencias | Génesis | Seleccionada para Avance 2 |
+| HU09 | Administración de categorías | Génesis | Completa Avance 2 |
+| HU10 | Actualización de existencias | Génesis | Completa Avance 2 |
 | HU11 | Agregar productos al carrito | César | Seleccionada para Avance 2 |
 | HU12 | Gestionar el carrito de compras | César | No seleccionada para Avance 2 |
-| HU13 | Revisión previa del pedido | César | Seleccionada para Avance 2 |
-| HU14 | Confirmación y registro del pedido | César | Seleccionada para Avance 2 |
-| HU15 | Historial de pedidos | César | Implementada fuera de las 10 |
-| HU16 | Administración de pedidos recibidos | Cristopher | Seleccionada para Avance 2 |
-| HU17 | Actualizar estado del pedido | Cristopher | Seleccionada para Avance 2 |
+| HU13 | Revisión previa del pedido | César | Completa Avance 2 |
+| HU14 | Confirmación y registro del pedido | César | Completa Avance 2 |
+| HU15 | Historial de pedidos | César | Completa Avance 2. Implementada fuera de las 10 |
+| HU16 | Administración de pedidos recibidos | Cristopher | Completa Avance 2 |
+| HU17 | Actualizar estado del pedido | Cristopher | Completa Avance 2|
 | HU18 | Consulta y seguimiento de pedidos | Cristopher | No seleccionada para Avance 2 |
 | HU19 | Notificaciones de pedidos | Cristopher | No seleccionada para Avance 2 |
 | HU20 | Reportes de ventas | Cristopher | No seleccionada para Avance 2 |
@@ -87,7 +87,7 @@ El equipo seleccionó 10 historias para el alcance comprometido del Avance 2. La
 
 ## Estado del avance
 
-El Avance 2 se organiza alrededor de las diez historias seleccionadas arriba. El equipo debe confirmar que el video demuestra los criterios de aceptación de cada historia y que los cambios quedan persistidos en MySQL. Las historias no seleccionadas quedan fuera del alcance declarado para este avance; esto no implica que no tengan código implementado.
+El Avance 2 se organiza alrededor de las diez historias seleccionadas arriba. 
 - [x] Avance 1 - Historias de usuario y prototipo (Semana 5)
 - [x] Avance 2 - Implementacion funcional 50% (Semana 9)
 - [ ] Entrega final (Semana 15)
