@@ -33,7 +33,7 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
 
 1. Clona el repositorio o descarga el proyecto.
 2. En MySQL Workbench, con una cuenta administradora, ejecuta el script completo `src/main/resources/caninoshop.sql`. El script crea la base `caninoshop`, el usuario de conexión, las tablas y datos iniciales para roles, estados de pedido, categorías y productos. No crea usuarios de prueba.
-3. Revisa `src/main/resources/application.properties`. La URL, el usuario y la contraseña de conexión deben coincidir con la configuración de tu MySQL y con el usuario creado por el script. Si cambias las credenciales, actualízalas en ambos lugares. Usa credenciales locales de desarrollo; no reutilices contraseñas de producción.
+3. Revisa `src/main/resources/application.properties`. La URL, el usuario y la contraseña de conexión deben coincidir con la configuración de tu MySQL y con el usuario creado por el script. Si cambias las credenciales, actualízalas en ambos lugares.
 4. Desde la carpeta raíz del proyecto, ejecuta:
 
    ```text
@@ -73,7 +73,7 @@ El equipo seleccionó 10 historias para el alcance comprometido del Avance 2. La
 | HU08 | Productos destacados o más comprados | Génesis | No seleccionada para Avance 2 |
 | HU09 | Administración de categorías | Génesis | Completa Avance 2 |
 | HU10 | Actualización de existencias | Génesis | Completa Avance 2 |
-| HU11 | Agregar productos al carrito | César | Seleccionada para Avance 2 |
+| HU11 | Agregar productos al carrito | César | Completa Avance 2  |
 | HU12 | Gestionar el carrito de compras | César | No seleccionada para Avance 2 |
 | HU13 | Revisión previa del pedido | César | Completa Avance 2 |
 | HU14 | Confirmación y registro del pedido | César | Completa Avance 2 |
