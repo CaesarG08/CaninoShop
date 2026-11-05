@@ -41,6 +41,10 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
    ```
 
    También puedes abrirlo como proyecto Maven en NetBeans y ejecutarlo desde allí.
+- Java 21 + Spring Boot
+- Thymeleaf + Bootstrap 5
+- MySQL / Hibernate JPA
+- Maven
 
 5. Abre [http://localhost:82](http://localhost:82). Crea una cuenta desde **Crear cuenta**; el registro público asigna el rol `CLIENTE` y guarda la contraseña cifrada.
 
@@ -97,3 +101,6 @@ El proyecto incluye el código fuente, `pom.xml`, este `README.md`, `.gitignore`
 ## Estado del avance
 
 El Avance 2 se organiza alrededor de las diez historias seleccionadas arriba. El equipo debe confirmar que el video demuestra los criterios de aceptación de cada historia y que los cambios quedan persistidos en MySQL. Las historias no seleccionadas quedan fuera del alcance declarado para este avance; esto no implica que no tengan código implementado.
+- [x] Avance 1 - Historias de usuario y prototipo (Semana 5)
+- [x] Avance 2 - Implementacion funcional 50% (Semana 9)
+- [ ] Entrega final (Semana 15)
