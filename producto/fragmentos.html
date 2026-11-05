@@ -1,0 +1,379 @@
+<section xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+         th:fragment="listado">
+    <div class="bg-success text-white py-2">
+        <div class="container">
+            <h1 class="h5 mb-0">[[#{producto.titulo}]]</h1>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <div th:replace="~{carrito/fragmentos :: alertas}"></div>
+
+        <form th:action="@{/producto/listado}" method="get" class="row g-2 mb-4">
+            <div class="col-md-6">
+                <input type="search" name="nombre" class="form-control"
+                       th:value="${filtroNombre}" th:placeholder="#{producto.buscar}"
+                       th:aria-label="#{producto.buscar}"/>
+            </div>
+            <div class="col-md-4">
+                <select name="idCategoria" class="form-select">
+                    <option value="" th:text="#{producto.categoria.todas}"></option>
+                    <option th:each="categoria : ${categorias}"
+                            th:value="${categoria.idCategoria}"
+                            th:text="${categoria.nombre}"
+                            th:selected="${categoria.idCategoria == idCategoriaSeleccionada}"></option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-success">[[#{accion.buscar}]]</button>
+            </div>
+        </form>
+
+        <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Categorías de productos">
+            <a th:href="@{/producto/listado}" class="btn btn-sm rounded-pill"
+               th:classappend="${idCategoriaSeleccionada == null ? 'btn-success' : 'btn-outline-success'}">Todos</a>
+            <a th:each="categoria : ${categorias}"
+               th:href="@{/producto/listado(idCategoria=${categoria.idCategoria})}"
+               class="btn btn-sm rounded-pill"
+               th:classappend="${idCategoriaSeleccionada != null and idCategoriaSeleccionada == categoria.idCategoria ? 'btn-success' : 'btn-outline-success'}"
+               th:text="${categoria.nombre}"></a>
+        </nav>
+
+        <section sec:authorize="hasRole('ADMIN')" class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h2 class="h6 mb-0" th:if="${producto.idProducto == null}">[[#{producto.agregar}]]</h2>
+                <h2 class="h6 mb-0" th:unless="${producto.idProducto == null}">[[#{producto.editar}]]</h2>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/producto/guardar}" method="post" th:object="${producto}"
+                      class="row g-3">
+                    <input type="hidden" th:field="*{idProducto}"/>
+                    <div class="col-md-6">
+                        <label for="nombreProducto" class="form-label">[[#{producto.nombre}]]</label>
+                        <input id="nombreProducto" type="text" class="form-control"
+                               th:field="*{nombre}" maxlength="150" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="categoriaProducto" class="form-label">[[#{producto.categoria}]]</label>
+                        <select id="categoriaProducto" class="form-select"
+                                th:field="*{categoria.idCategoria}" required>
+                            <option value="" th:text="#{producto.categoria.seleccionar}"></option>
+                            <option th:each="categoria : ${categorias}"
+                                    th:value="${categoria.idCategoria}"
+                                    th:text="${categoria.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label for="descripcionProducto" class="form-label">[[#{producto.descripcion}]]</label>
+                        <textarea id="descripcionProducto" class="form-control" rows="2"
+                                  th:field="*{descripcion}"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="precioProducto" class="form-label">[[#{producto.precio}]]</label>
+                        <input id="precioProducto" type="number" class="form-control"
+                               th:field="*{precio}" min="0" step="0.01" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="stockProducto" class="form-label">[[#{producto.stock}]]</label>
+                        <input id="stockProducto" type="number" class="form-control"
+                               th:field="*{stock}" min="0" step="1" required/>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-3">
+                        <div class="form-check">
+                            <input id="estadoProducto" type="checkbox" class="form-check-input"
+                                   th:field="*{estado}"/>
+                            <label for="estadoProducto" class="form-check-label">[[#{producto.activo}]]</label>
+                        </div>
+                        <div class="form-check">
+                            <input id="destacadoProducto" type="checkbox" class="form-check-input"
+                                   th:field="*{destacado}"/>
+                            <label for="destacadoProducto" class="form-check-label">[[#{producto.destacado}]]</label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-success">[[#{accion.guardar}]]</button>
+                        <a th:href="@{/producto/listado}" class="btn btn-outline-secondary"
+                           th:if="${producto.idProducto != null}">[[#{accion.cancelar}]]</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="h5 mb-0">[[#{producto.resultados}]]</h2>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/producto/listado(agotados=true)}"
+               class="btn btn-outline-secondary btn-sm">[[#{producto.agotados}]]</a>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-9">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4"
+                     th:if="${productos != null and !productos.isEmpty()}">
+                    <div class="col" th:each="productoItem : ${productos}">
+                        <article class="card h-100 shadow-sm">
+                            <div class="bg-white text-center py-4 border-bottom">
+                                <img th:if="${productoItem.rutaImagen != null and !productoItem.rutaImagen.isBlank()}"
+                                     th:src="${productoItem.rutaImagen}" th:alt="${productoItem.nombre}"
+                                     class="img-fluid" style="max-height: 180px; object-fit: contain;"/>
+                                <i th:unless="${productoItem.rutaImagen != null and !productoItem.rutaImagen.isBlank()}"
+                                   class="fa-solid fa-bone fa-3x text-secondary"></i>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start gap-2">
+                                    <h3 class="h5 card-title fw-bold" th:text="${productoItem.nombre}"></h3>
+                                    <span class="badge" th:classappend="${productoItem.estado ? 'text-bg-success' : 'text-bg-secondary'}"
+                                          th:text="${productoItem.estado ? #messages.msg('producto.activo') : #messages.msg('producto.inactivo')}"></span>
+                                </div>
+                                <span class="badge text-bg-light border align-self-start mb-2"
+                                      th:if="${productoItem.categoria != null}"
+                                      th:text="${productoItem.categoria.nombre}"></span>
+                                <p class="card-text text-muted small flex-grow-1"
+                                   th:text="${productoItem.descripcion}"></p>
+                                <p class="text-success fw-bold fs-5 mb-1">
+                                    [[#{moneda}]][[${#numbers.formatDecimal(productoItem.precio, 1, 'COMMA', 2, 'POINT')}]]
+                                </p>
+                                <p class="small text-muted" th:text="#{producto.stock.disponible(${productoItem.stock})}"></p>
+                                <div class="d-flex flex-wrap gap-2 mt-auto">
+                                    <a th:href="@{/producto/detalle/{id}(id=${productoItem.idProducto})}"
+                                       class="btn btn-outline-success btn-sm">[[#{accion.detalle}]]</a>
+                                    <div sec:authorize="hasRole('CLIENTE')" th:if="${productoItem.estado and productoItem.stock > 0}">
+                                        <div th:replace="~{carrito/fragmentos :: agregar(${productoItem.idProducto})}"></div>
+                                    </div>
+                                    <span class="badge text-bg-danger" th:if="${productoItem.stock == 0}">
+                                        [[#{producto.sin.stock}]]
+                                    </span>
+                                    <a sec:authorize="hasRole('ADMIN')"
+                                       th:href="@{/producto/listado(editar=${productoItem.idProducto})}"
+                                       class="btn btn-outline-primary btn-sm">[[#{accion.actualizar}]]</a>
+                                    <form sec:authorize="hasRole('ADMIN')" th:if="${productoItem.estado}"
+                                          th:action="@{/producto/eliminar}" method="post">
+                                        <input type="hidden" name="idProducto" th:value="${productoItem.idProducto}"/>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            [[#{producto.desactivar}]]
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="text-center bg-white rounded shadow-sm py-5"
+                     th:if="${productos == null or productos.isEmpty()}">
+                    <i class="fa-solid fa-dog fa-3x text-secondary mb-3"></i>
+                    <h3 class="h5">[[#{producto.sin.resultados}]]</h3>
+                </div>
+            </div>
+
+            <aside class="col-lg-3">
+                <div class="card border-0 shadow-sm bg-warning-subtle">
+                    <div class="card-body p-4">
+                        <h2 class="h5 fw-bold">Compra sencilla</h2>
+                        <ol class="small ps-3 mb-4">
+                            <li>Consulta productos.</li>
+                            <li>Agrega artículos disponibles.</li>
+                            <li>Confirma tu pedido.</li>
+                            <li>Consulta su estado.</li>
+                        </ol>
+                        <a sec:authorize="isAnonymous()" th:href="@{/login}"
+                           class="btn btn-success w-100">[[#{usuario.login}]]</a>
+                        <a sec:authorize="hasRole('CLIENTE')" th:href="@{/carrito/listado}"
+                           class="btn btn-success w-100">[[#{menu.carrito}]]</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<section xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+         th:fragment="administrar">
+    <div class="bg-success text-white py-2">
+        <div class="container">
+            <h1 class="h5 mb-0">[[#{producto.administracion}]]</h1>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <div th:replace="~{carrito/fragmentos :: alertas}"></div>
+
+        <section class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-success text-white">
+                <h2 class="h6 mb-0" th:if="${producto.idProducto == null}">[[#{producto.agregar}]]</h2>
+                <h2 class="h6 mb-0" th:unless="${producto.idProducto == null}">[[#{producto.editar}]]</h2>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/producto/guardar}" method="post" th:object="${producto}"
+                      class="row g-3">
+                    <input type="hidden" th:field="*{idProducto}"/>
+                    <div class="col-md-6">
+                        <label for="nombreProductoAdmin" class="form-label">[[#{producto.nombre}]]</label>
+                        <input id="nombreProductoAdmin" type="text" class="form-control"
+                               th:field="*{nombre}" maxlength="150" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="categoriaProductoAdmin" class="form-label">[[#{producto.categoria}]]</label>
+                        <select id="categoriaProductoAdmin" class="form-select"
+                                th:field="*{categoria.idCategoria}" required>
+                            <option value="" th:text="#{producto.categoria.seleccionar}"></option>
+                            <option th:each="categoria : ${categorias}"
+                                    th:value="${categoria.idCategoria}"
+                                    th:text="${categoria.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label for="descripcionProductoAdmin" class="form-label">[[#{producto.descripcion}]]</label>
+                        <textarea id="descripcionProductoAdmin" class="form-control" rows="2"
+                                  th:field="*{descripcion}"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="imagenProductoAdmin" class="form-label">[[#{producto.imagen}]]</label>
+                        <input id="imagenProductoAdmin" type="url" class="form-control"
+                               th:field="*{rutaImagen}" maxlength="1024"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="precioProductoAdmin" class="form-label">[[#{producto.precio}]]</label>
+                        <input id="precioProductoAdmin" type="number" class="form-control"
+                               th:field="*{precio}" min="0" step="0.01" required/>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="stockProductoAdmin" class="form-label">[[#{producto.stock}]]</label>
+                        <input id="stockProductoAdmin" type="number" class="form-control"
+                               th:field="*{stock}" min="0" step="1" required/>
+                    </div>
+                    <div class="col-12 d-flex gap-4">
+                        <div class="form-check">
+                            <input id="estadoProductoAdmin" type="checkbox" class="form-check-input"
+                                   th:field="*{estado}"/>
+                            <label for="estadoProductoAdmin" class="form-check-label">[[#{producto.activo}]]</label>
+                        </div>
+                        <div class="form-check">
+                            <input id="destacadoProductoAdmin" type="checkbox" class="form-check-input"
+                                   th:field="*{destacado}"/>
+                            <label for="destacadoProductoAdmin" class="form-check-label">[[#{producto.destacado}]]</label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-success">[[#{accion.guardar}]]</button>
+                        <a th:href="@{/producto/administrar}" class="btn btn-outline-secondary"
+                           th:if="${producto.idProducto != null}">[[#{accion.cancelar}]]</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="table-responsive" th:if="${productos != null and !productos.isEmpty()}">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>[[#{producto.nombre}]]</th>
+                                <th>[[#{producto.categoria}]]</th>
+                                <th class="text-end">[[#{producto.precio}]]</th>
+                                <th class="text-end">[[#{producto.stock}]]</th>
+                                <th>[[#{categoria.estado}]]</th>
+                                <th class="text-end">[[#{pedido.columna.accion}]]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="productoItem : ${productos}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img th:if="${productoItem.rutaImagen != null and !productoItem.rutaImagen.isBlank()}"
+                                             th:src="${productoItem.rutaImagen}" th:alt="${productoItem.nombre}"
+                                             class="rounded border" style="width: 48px; height: 48px; object-fit: cover;"/>
+                                        <div>
+                                            <strong th:text="${productoItem.nombre}"></strong>
+                                            <div class="small text-muted" th:text="${productoItem.descripcion}"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${productoItem.categoria.nombre}"></td>
+                                <td class="text-end">
+                                    [[#{moneda}]][[${#numbers.formatDecimal(productoItem.precio, 1, 'COMMA', 2, 'POINT')}]]
+                                </td>
+                                <td class="text-end" th:text="${productoItem.stock}"></td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${productoItem.estado ? 'text-bg-success' : 'text-bg-secondary'}"
+                                          th:text="${productoItem.estado ? #messages.msg('producto.activo') : #messages.msg('producto.inactivo')}"></span>
+                                </td>
+                                <td class="text-end">
+                                    <div sec:authorize="hasRole('ADMIN')" class="d-inline-flex gap-2">
+                                        <a th:href="@{/producto/administrar(editar=${productoItem.idProducto})}"
+                                           class="btn btn-outline-primary btn-sm">[[#{accion.actualizar}]]</a>
+                                        <form th:if="${productoItem.estado}"
+                                              th:action="@{/producto/eliminar}" method="post">
+                                            <input type="hidden" name="idProducto"
+                                                   th:value="${productoItem.idProducto}"/>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                [[#{producto.desactivar}]]
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-center text-muted mb-0" th:if="${productos == null or productos.isEmpty()}">
+                    [[#{producto.sin.resultados}]]
+                </p>
+            </div>
+        </section>
+    </div>
+</section>
+
+<section xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+         th:fragment="detalle" class="d-flex flex-column flex-grow-1 bg-light">
+    <div class="bg-success text-white py-2">
+        <div class="container">
+            <h1 class="h5 mb-0">Detalle del producto</h1>
+        </div>
+    </div>
+
+    <div class="container py-4 flex-grow-1 d-flex align-items-start">
+        <article class="card border-0 shadow-sm w-100">
+            <div class="row g-0">
+                <div class="col-md-5 d-flex align-items-center justify-content-center bg-body-secondary p-4"
+                     style="min-height: 340px;">
+                    <img th:if="${producto.rutaImagen != null and !producto.rutaImagen.isBlank()}"
+                         th:src="${producto.rutaImagen}" th:alt="${producto.nombre}"
+                         class="img-fluid" style="max-height: 320px; object-fit: contain;"/>
+                    <span th:unless="${producto.rutaImagen != null and !producto.rutaImagen.isBlank()}"
+                          class="text-muted">Imagen del producto</span>
+                </div>
+                <div class="col-md-7">
+                    <div class="card-body p-4 p-lg-5">
+                        <span class="badge text-bg-light border mb-3"
+                              th:if="${producto.categoria != null}"
+                              th:text="${producto.categoria.nombre}"></span>
+                        <h2 class="h3 fw-bold" th:text="${producto.nombre}"></h2>
+                        <p class="text-muted" th:if="${producto.descripcion != null and !producto.descripcion.isBlank()}"
+                           th:text="${producto.descripcion}"></p>
+                        <p class="text-success fw-bold fs-3">
+                            [[#{moneda}]][[${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}]]
+                        </p>
+                        <p class="text-success small fw-semibold" th:if="${producto.stock > 0}"
+                           th:text="#{producto.stock.disponible(${producto.stock})}"></p>
+                        <p class="text-danger small fw-semibold" th:if="${producto.stock == 0}">
+                            [[#{producto.sin.stock}]]
+                        </p>
+                        <div sec:authorize="hasRole('CLIENTE')" th:if="${producto.estado and producto.stock > 0}"
+                             class="mb-3">
+                            <p class="form-label fw-semibold mb-1">[[#{carrito.cantidad}]]</p>
+                            <div th:replace="~{carrito/fragmentos :: agregar(${producto.idProducto})}"></div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a sec:authorize="isAnonymous()" th:if="${producto.estado and producto.stock > 0}"
+                               th:href="@{/login}" class="btn btn-success">[[#{usuario.login}]]</a>
+                            <a th:href="@{/}" class="btn btn-outline-secondary">
+                                [[#{producto.volver.catalogo}]]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        </article>
+    </div>
+</section>
