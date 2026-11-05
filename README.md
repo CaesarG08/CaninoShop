@@ -23,7 +23,6 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
 - Java 21 + Spring Boot
 - Thymeleaf + Bootstrap 5
 - MySQL / Hibernate JPA
-- Firebase Storage
 - Maven
 
 ---
@@ -59,5 +58,5 @@ Requisitos: Java 21, Maven y MySQL 8.
 ## Estado del proyecto
 
 - [x] Avance 1 - Historias de usuario y prototipo (Semana 5)
-- [ ] Avance 2 - Implementacion funcional 50% (Semana 9)
+- [x] Avance 2 - Implementacion funcional 50% (Semana 9)
 - [ ] Entrega final (Semana 15)
