@@ -80,19 +80,6 @@ El equipo seleccionó 10 historias para el alcance comprometido del Avance 2. La
 | HU19 | Notificaciones de pedidos | Cristopher | No seleccionada para Avance 2 |
 | HU20 | Reportes de ventas | Cristopher | No seleccionada para Avance 2 |
 
-**Aclaraciones del backlog:** HU10 tiene un título que no coincide con su descripción; el equipo la toma como actualización de existencias. HU15 no tiene una ficha completa de criterios de aceptación en el Avance 1, pero la funcionalidad de historial y detalle de pedidos está implementada en el proyecto.
-
-## Recorrido principal de demostración
-
-Registro e inicio de sesión → catálogo → agregar productos al carrito → revisión de compra → confirmación del pedido → gestión del pedido y cambio de estado. Los datos del recorrido se guardan en MySQL. El video de demostración se comparte mediante el enlace incluido en los comentarios de la entrega.
-
-## Evidencia de colaboración
-
-El trabajo se organizó por ramas funcionales. Cada integrante realizó commits en su rama y participó en pull requests con revisión antes de integrar cambios. El historial, las ramas y los pull requests se pueden consultar en el [repositorio de CaninoShop](https://github.com/CaesarG08/CaninoShop).
-
-## Archivos que se entregan
-
-El proyecto incluye el código fuente, `pom.xml`, este `README.md`, `.gitignore` y el script SQL necesario para crear la base de datos y sus datos iniciales. La carpeta `target` contiene archivos generados por Maven y se excluye del repositorio mediante `.gitignore`; no es necesaria para ejecutar el proyecto.
 
 ## Estado del avance
 
