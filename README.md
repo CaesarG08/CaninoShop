@@ -30,7 +30,18 @@ Universidad Fidelitas - Tercer cuatrimestre 2026
 
 ## Como ejecutar el proyecto
 
-Instrucciones de instalacion se agregaran en el Avance 2.
+Requisitos: Java 21, Maven y MySQL 8.
+
+1. Crear la base de datos: abrir MySQL con un usuario administrador y ejecutar el script
+   `src/main/resources/caninoshop.sql`. Crea la base `caninoshop`, el usuario de la aplicacion
+   (`usuario_caninoshop`), las tablas y los datos de referencia (roles, estados de pedido,
+   categorias y productos). Se puede ejecutar mas de una vez sin borrar datos.
+2. Los datos de conexion estan en `src/main/resources/application.properties`
+   (por defecto `localhost:3306/caninoshop`).
+3. Ejecutar el proyecto desde NetBeans o con `mvn spring-boot:run`. La aplicacion queda en
+   `http://localhost:82`.
+4. Crear una cuenta desde "Crear cuenta". Los usuarios se crean desde la aplicacion porque la
+   contrasena se guarda encriptada.
 
 ---
 
